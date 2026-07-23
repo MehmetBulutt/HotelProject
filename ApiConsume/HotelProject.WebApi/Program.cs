@@ -10,10 +10,23 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddDbContext<Context>(options =>
 {
     options.UseSqlServer(
         "Server=Mehmet-Bulut\\SQLEXPRESS;Database=ApiDb;Trusted_Connection=True;TrustServerCertificate=True;");
+});
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("OtelApiCors", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 // Business Layer
@@ -42,6 +55,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+
+app.UseCors("OtelApiCors");
 
 app.UseAuthorization();
 
